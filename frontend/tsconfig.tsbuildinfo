@@ -1,0 +1,1 @@
+{"root":["./src/App.tsx","./src/main.tsx","./src/components/BehaviorSection.tsx","./src/components/Editor.tsx","./src/components/Field.tsx","./src/components/Inspector.tsx","./src/components/Library.tsx","./src/components/NewDeviceDialog.tsx","./src/components/SignalsSection.tsx","./src/lib/api.ts","./src/lib/types.ts","./src/lib/util.ts"],"version":"5.6.3"}

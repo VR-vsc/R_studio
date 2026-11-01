@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Onest", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --color-silver: #e6e9ed;   /* фон: холодное «ртутное» серебро */
+  --color-paper: #f8f9fa;    /* рабочие поверхности */
+  --color-ink: #1a2430;      /* текст, графитово-синий */
+  --color-mute: #5d6976;     /* вторичный текст */
+  --color-line: #cbd2d9;     /* разделители */
+  --color-hg: #4f46c8;       /* акцент: линия спектра ртути 435 нм */
+  --color-hg-soft: #e7e5fb;
+
+  --color-g-property: #0e7480;     /* 📊 свойства */
+  --color-g-capability: #4f46c8;   /* 🎛 возможности */
+  --color-g-setting: #a35f00;      /* ⚙️ настройки */
+  --color-g-environment: #3d7a37;  /* 🌍 окружение */
+
+  --color-bad: #b42318;
+  --color-warn: #9a6700;
+}
+
+html, body, #root { height: 100%; }
+body {
+  background: var(--color-silver);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible { outline: 2px solid var(--color-hg); outline-offset: 2px; border-radius: 4px; }
+
+@layer components {
+.field {
+  width: 100%;
+  background: white;
+  border: 1px solid var(--color-line);
+  border-radius: 6px;
+  padding: 6px 9px;
+  font-size: 14px;
+  color: var(--color-ink);
+}
+.field:focus { border-color: var(--color-hg); outline: none; box-shadow: 0 0 0 3px var(--color-hg-soft); }
+.field.code { font-family: var(--font-mono); font-size: 13px; }
+.field.invalid { border-color: var(--color-bad); }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 12px; border-radius: 6px; font-weight: 500; font-size: 14px;
+  border: 1px solid var(--color-line); background: white; color: var(--color-ink);
+}
+.btn:hover { border-color: var(--color-ink); }
+.btn-primary { background: var(--color-ink); color: white; border-color: var(--color-ink); }
+.btn-primary:hover { background: #2a3746; }
+.btn:disabled { opacity: .45; pointer-events: none; }
+.btn-ghost { border-color: transparent; background: transparent; }
+.btn-ghost:hover { background: rgba(26,36,48,.06); border-color: transparent; }
+
+}
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
