@@ -1,0 +1,128 @@
+{
+  "rdl": "1.0",
+  "id": "thermostat",
+  "title": "Термостат",
+  "category": "climate",
+  "icon": "thermometer",
+  "description": "Держит температуру в комнате: включает обогрев, когда холоднее цели, и отпускает, когда теплее (с запасом на гистерезис).",
+  "signals": [
+    {
+      "name": "room_temp",
+      "title": "Температура в комнате",
+      "group": "property",
+      "unit": "°C",
+      "default": 19,
+      "precision": 1
+    },
+    {
+      "name": "heating",
+      "title": "Обогрев",
+      "group": "property",
+      "type": "bool",
+      "options": {
+        "0": "отдыхает",
+        "1": "греет"
+      }
+    },
+    {
+      "name": "target_temp",
+      "title": "Желаемая температура",
+      "group": "capability",
+      "unit": "°C",
+      "min": 5,
+      "max": 35,
+      "default": 22,
+      "precision": 1
+    },
+    {
+      "name": "mode",
+      "title": "Режим",
+      "group": "capability",
+      "type": "enum",
+      "default": 1,
+      "options": {
+        "0": "выключен",
+        "1": "обогрев",
+        "2": "эко"
+      }
+    },
+    {
+      "name": "hysteresis",
+      "title": "Гистерезис",
+      "group": "setting",
+      "unit": "°C",
+      "min": 0.1,
+      "max": 3,
+      "default": 0.5,
+      "precision": 1
+    },
+    {
+      "name": "outdoor_temp",
+      "title": "Температура на улице",
+      "group": "environment",
+      "unit": "°C",
+      "min": -40,
+      "max": 45,
+      "default": 5,
+      "precision": 1
+    },
+    {
+      "name": "window_open",
+      "title": "Открыто окно",
+      "group": "environment",
+      "type": "bool",
+      "options": {
+        "0": "закрыто",
+        "1": "открыто"
+      }
+    }
+  ],
+  "behavior": [
+    {
+      "id": "decide",
+      "title": "Решаем, греть ли (эко — цель на 3° ниже)",
+      "on": "tick",
+      "do": [
+        {
+          "set": "heating",
+          "to": "0 if mode == 0 else (1 if room_temp < target_temp - 3 * (mode == 2) - hysteresis else (0 if room_temp >= target_temp - 3 * (mode == 2) + hysteresis else heating))"
+        }
+      ]
+    },
+    {
+      "id": "physics",
+      "title": "Комната греется от батареи и остывает к улице",
+      "on": "tick",
+      "do": [
+        {
+          "set": "room_temp",
+          "to": "room_temp + dt * (0.08 * heating - (0.002 + 0.02 * window_open) * (room_temp - outdoor_temp))"
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "target_reached",
+      "title": "Температура достигнута",
+      "when": "mode > 0 && abs(room_temp - target_temp + 3 * (mode == 2)) <= hysteresis",
+      "severity": "info"
+    },
+    {
+      "name": "too_cold",
+      "title": "В комнате холодно",
+      "when": "room_temp < 16",
+      "severity": "warning",
+      "stimulus": [
+        {
+          "signal": "window_open",
+          "value": 1
+        },
+        {
+          "signal": "outdoor_temp",
+          "value": -30
+        }
+      ]
+    }
+  ]
+}

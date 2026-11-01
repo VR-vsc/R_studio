@@ -1,0 +1,50 @@
+{
+  "rdl": "1.0",
+  "id": "kran_v_vannoy",
+  "title": "Кран в ванной",
+  "category": "plumbing",
+  "description": "",
+  "signals": [
+    {
+      "name": "state",
+      "title": "Состояние",
+      "group": "property",
+      "type": "bool",
+      "options": {
+        "0": "выкл",
+        "1": "вкл"
+      }
+    },
+    {
+      "name": "power",
+      "title": "Питание",
+      "group": "capability",
+      "type": "bool",
+      "options": {
+        "0": "выкл",
+        "1": "вкл"
+      }
+    }
+  ],
+  "vars": {},
+  "behavior": [
+    {
+      "title": "Состояние повторяет питание",
+      "on": "tick",
+      "do": [
+        {
+          "set": "state",
+          "to": "power"
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "turned_on",
+      "title": "Устройство включилось",
+      "when": "state == 1",
+      "severity": "info"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "rdl": "1.0",
+  "id": "siren",
+  "title": "Сирена",
+  "category": "safety",
+  "icon": "siren",
+  "description": "Звуковое и световое оповещение. Может выключаться сама через заданное время.",
+  "signals": [
+    {"name": "siren", "title": "Сирена", "group": "capability", "type": "bool", "options": {"0": "тихо", "1": "звучит"}},
+    {"name": "power_w", "title": "Потребление", "group": "property", "unit": "Вт", "precision": 1},
+    {"name": "volume", "title": "Громкость", "group": "setting", "unit": "%", "min": 10, "max": 100, "default": 80, "precision": 0},
+    {"name": "auto_off", "title": "Выключить через (0 — не выключать)", "group": "setting", "unit": "с", "min": 0, "max": 600, "default": 0, "precision": 0}
+  ],
+  "vars": {"left": 0},
+  "behavior": [
+    {"id": "arm_timer", "title": "При включении заводим таймер", "on": "command:siren", "when": "value == 1",
+     "do": [{"set": "left", "to": "auto_off"}]},
+    {"id": "countdown", "on": "tick", "when": "siren == 1 && auto_off > 0 && left > 0",
+     "do": [{"set": "left", "to": "left - dt"}]},
+    {"id": "auto_off", "title": "Таймер вышел — выключаемся", "on": "tick", "when": "siren == 1 && auto_off > 0 && left <= 0",
+     "do": [{"set": "siren", "to": 0}, {"log": "сирена выключена по таймеру"}]},
+    {"id": "power", "on": "tick", "do": [{"set": "power_w", "to": "siren * volume * 0.15"}]}
+  ],
+  "events": [
+    {"name": "siren_on", "title": "Сирена включилась", "when": "siren == 1", "severity": "warning"}
+  ]
+}

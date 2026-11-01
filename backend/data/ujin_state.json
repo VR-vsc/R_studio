@@ -1,0 +1,26 @@
+{
+  "created": [
+    "rtut_barrier_01:hold_time",
+    "rtut_barrier_01:position",
+    "rtut_barrier_01:state",
+    "rtut_counter_01:load_relay",
+    "rtut_counter_01:power_limit",
+    "rtut_counter_01:power_w",
+    "rtut_counter_01:total_kwh",
+    "rtut_counter_01:voltage",
+    "rtut_leak_01:battery",
+    "rtut_leak_01:debounce",
+    "rtut_leak_01:leak",
+    "rtut_light_01:auto_off",
+    "rtut_light_01:brightness",
+    "rtut_light_01:energy_kwh",
+    "rtut_light_01:lamp",
+    "rtut_light_01:motion_auto",
+    "rtut_light_01:power_w",
+    "rtut_thermostat_01:heating",
+    "rtut_thermostat_01:hysteresis",
+    "rtut_thermostat_01:mode",
+    "rtut_thermostat_01:room_temp",
+    "rtut_thermostat_01:target_temp"
+  ]
+}

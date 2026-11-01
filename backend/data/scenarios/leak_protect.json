@@ -1,0 +1,13 @@
+{
+  "rsl": "1.0", "id": "leak_protect", "title": "Защита от протечки",
+  "description": "Вода на полу в ванной — перекрываем ввод, включаем сирену и сообщаем жителю.",
+  "enabled": true,
+  "triggers": [{"type": "event", "instance": "bath_leak", "event": "leak_detected"}],
+  "conditions": [], "match": "all",
+  "actions": [
+    {"type": "command", "instance": "bath_valve", "signal": "valve", "value": 0},
+    {"type": "command", "instance": "hall_siren", "signal": "siren", "value": 1, "hold": 60},
+    {"type": "notify", "text": "Протечка в ванной. Воду перекрыли, проверьте трубы.", "severity": "critical", "to": "all"}
+  ],
+  "cooldown": 30
+}

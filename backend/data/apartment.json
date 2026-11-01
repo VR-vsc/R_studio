@@ -1,0 +1,81 @@
+{
+  "instances": [
+    {
+      "id": "bath_leak",
+      "device_id": "leak_sensor",
+      "title": "Протечка в ванной",
+      "room": "Ванная",
+      "ujin": {
+        "ext": "rtut_leak_01",
+        "sn": "17048697650011558"
+      }
+    },
+    {
+      "id": "bath_valve",
+      "device_id": "water_valve",
+      "title": "Кран на вводе воды",
+      "room": "Ванная"
+    },
+    {
+      "id": "hall_siren",
+      "device_id": "siren",
+      "title": "Сирена",
+      "room": "Прихожая",
+      "settings": {
+        "auto_off": 60
+      }
+    },
+    {
+      "id": "living_thermo",
+      "device_id": "thermostat",
+      "title": "Термостат",
+      "room": "Гостиная",
+      "ujin": {
+        "ext": "rtut_thermostat_01",
+        "sn": "17048877610014040"
+      }
+    },
+    {
+      "id": "living_light",
+      "device_id": "smart_light",
+      "title": "Свет в гостиной",
+      "room": "Гостиная",
+      "ujin": {
+        "ext": "rtut_light_01",
+        "sn": "17036961610007613"
+      }
+    },
+    {
+      "id": "bedroom_vent",
+      "device_id": "ventilation",
+      "title": "Вентиляция",
+      "room": "Спальня"
+    },
+    {
+      "id": "kitchen_smoke",
+      "device_id": "smoke_detector",
+      "title": "Пожарный датчик",
+      "room": "Кухня"
+    },
+    {
+      "id": "shield_meter",
+      "device_id": "power_meter",
+      "title": "Счётчик квартиры",
+      "room": "Электрощит",
+      "ujin": {
+        "ext": "rtut_counter_01",
+        "sn": "17036889610009538"
+      }
+    },
+    {
+      "id": "yard_barrier",
+      "device_id": "barrier",
+      "title": "Шлагбаум во двор",
+      "room": "Двор",
+      "ujin": {
+        "ext": "rtut_barrier_01",
+        "sn": "17036961610007561"
+      }
+    }
+  ]
+}

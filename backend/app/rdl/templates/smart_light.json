@@ -1,0 +1,173 @@
+{
+  "rdl": "1.0",
+  "id": "smart_light",
+  "title": "Умный свет",
+  "category": "light",
+  "icon": "bulb",
+  "description": "Светильник с яркостью и датчиком движения: может включаться сам и гаснуть по таймеру.",
+  "signals": [
+    {
+      "name": "lamp",
+      "title": "Свет",
+      "group": "capability",
+      "type": "bool",
+      "options": {
+        "0": "выключен",
+        "1": "включен"
+      }
+    },
+    {
+      "name": "brightness",
+      "title": "Яркость",
+      "group": "capability",
+      "unit": "%",
+      "min": 1,
+      "max": 100,
+      "default": 80,
+      "precision": 0
+    },
+    {
+      "name": "power_w",
+      "title": "Мощность",
+      "group": "property",
+      "unit": "Вт",
+      "precision": 1
+    },
+    {
+      "name": "energy_kwh",
+      "title": "Энергия",
+      "group": "property",
+      "unit": "кВт·ч",
+      "monotonic": true,
+      "precision": 5
+    },
+    {
+      "name": "motion_auto",
+      "title": "Включать по движению",
+      "group": "setting",
+      "type": "bool",
+      "default": 1,
+      "options": {
+        "0": "нет",
+        "1": "да"
+      }
+    },
+    {
+      "name": "auto_off",
+      "title": "Гасить без движения через",
+      "group": "setting",
+      "unit": "с",
+      "min": 0,
+      "max": 3600,
+      "default": 30,
+      "precision": 0
+    },
+    {
+      "name": "motion",
+      "title": "Движение в комнате",
+      "group": "environment",
+      "type": "bool",
+      "options": {
+        "0": "никого",
+        "1": "есть движение"
+      }
+    }
+  ],
+  "vars": {
+    "idle": 0
+  },
+  "behavior": [
+    {
+      "id": "motion_on",
+      "title": "Увидели движение — включаем",
+      "on": "tick",
+      "when": "motion_auto && motion && !lamp",
+      "do": [
+        {
+          "set": "lamp",
+          "to": 1
+        },
+        {
+          "log": "свет включён по движению"
+        }
+      ]
+    },
+    {
+      "id": "idle",
+      "title": "Считаем, сколько никого нет",
+      "on": "tick",
+      "do": [
+        {
+          "set": "idle",
+          "to": "0 if motion else idle + dt"
+        }
+      ]
+    },
+    {
+      "id": "auto_off",
+      "title": "Никого дольше таймера — гасим",
+      "on": "tick",
+      "when": "lamp && auto_off > 0 && idle >= auto_off",
+      "do": [
+        {
+          "set": "lamp",
+          "to": 0
+        },
+        {
+          "log": "свет погашен: никого нет {idle} с"
+        }
+      ]
+    },
+    {
+      "id": "power",
+      "on": "tick",
+      "do": [
+        {
+          "set": "power_w",
+          "to": "lamp * 12 * brightness / 100"
+        }
+      ]
+    },
+    {
+      "id": "energy",
+      "on": "tick",
+      "do": [
+        {
+          "set": "energy_kwh",
+          "to": "energy_kwh + power_w * dt / 3600000"
+        }
+      ]
+    },
+    {
+      "id": "manual_on",
+      "on": "command:lamp",
+      "when": "value == 1",
+      "do": [
+        {
+          "set": "idle",
+          "to": 0
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "light_on",
+      "title": "Свет включился",
+      "when": "lamp == 1",
+      "severity": "info",
+      "stimulus": [
+        {
+          "signal": "motion",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "name": "light_off",
+      "title": "Свет погас",
+      "when": "lamp == 0",
+      "severity": "info"
+    }
+  ]
+}

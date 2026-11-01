@@ -1,0 +1,26 @@
+{
+  "rdl": "1.0",
+  "id": "ventilation",
+  "title": "Приточная вентиляция",
+  "category": "climate",
+  "icon": "fan",
+  "description": "Следит за CO₂: в авто-режиме сама поднимает скорость, когда в комнате душно.",
+  "signals": [
+    {"name": "co2", "title": "CO₂ в комнате", "group": "property", "unit": "ppm", "min": 400, "max": 5000, "default": 600, "precision": 0},
+    {"name": "fan_speed", "title": "Скорость вентилятора", "group": "capability", "min": 0, "max": 6, "default": 1, "precision": 0},
+    {"name": "mode", "title": "Режим", "group": "capability", "type": "enum", "default": 2, "options": {"0": "выключена", "1": "ручной", "2": "авто"}},
+    {"name": "co2_target", "title": "Комфортный CO₂", "group": "setting", "unit": "ppm", "min": 500, "max": 1500, "default": 800, "precision": 0},
+    {"name": "people", "title": "Людей в комнате", "group": "environment", "min": 0, "max": 20, "default": 1, "precision": 0}
+  ],
+  "behavior": [
+    {"id": "off", "title": "Выключена — вентилятор стоит", "on": "tick", "when": "mode == 0", "do": [{"set": "fan_speed", "to": 0}]},
+    {"id": "auto", "title": "Авто: чем душнее, тем быстрее", "on": "tick", "when": "mode == 2",
+     "do": [{"set": "fan_speed", "to": "0 if co2 < co2_target - 150 else min(6, 1 + int(max(0, co2 - co2_target) / 100))"}]},
+    {"id": "air", "title": "Люди надышивают, приток выдувает", "on": "tick",
+     "do": [{"set": "co2", "to": "co2 + dt * (people * 1.5 - (co2 - 400) * fan_speed * 0.004)"}]}
+  ],
+  "events": [
+    {"name": "stuffy", "title": "Душно: CO₂ выше 1200", "when": "co2 > 1200", "severity": "warning"},
+    {"name": "fresh", "title": "Воздух свежий", "when": "co2 < co2_target", "severity": "info"}
+  ]
+}

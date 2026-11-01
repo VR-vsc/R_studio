@@ -1,0 +1,11 @@
+{
+  "rsl": "1.0", "id": "window_closed", "title": "Окно закрыли — снова греем",
+  "description": "Возвращаем обогрев после проветривания.",
+  "enabled": true,
+  "triggers": [{"type": "value", "instance": "living_thermo", "signal": "window_open", "op": "==", "value": 0}],
+  "conditions": [], "match": "all",
+  "actions": [
+    {"type": "command", "instance": "living_thermo", "signal": "mode", "value": 1}
+  ],
+  "cooldown": 0
+}

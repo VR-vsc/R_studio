@@ -1,0 +1,12 @@
+{
+  "rsl": "1.0", "id": "window_heating", "title": "Окно открыто — пауза отопления",
+  "description": "Пока проветривают гостиную, термостат не греет улицу.",
+  "enabled": true,
+  "triggers": [{"type": "value", "instance": "living_thermo", "signal": "window_open", "op": "==", "value": 1}],
+  "conditions": [{"instance": "living_thermo", "signal": "mode", "op": "!=", "value": 0}], "match": "all",
+  "actions": [
+    {"type": "command", "instance": "living_thermo", "signal": "mode", "value": 0},
+    {"type": "notify", "text": "Окно в гостиной открыто — отопление на паузе.", "severity": "info", "to": "resident"}
+  ],
+  "cooldown": 0
+}

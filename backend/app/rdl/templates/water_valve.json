@@ -1,0 +1,122 @@
+{
+  "rdl": "1.0",
+  "id": "water_valve",
+  "title": "Кран подачи воды",
+  "category": "plumbing",
+  "icon": "valve",
+  "description": "Электрокран на вводе воды в квартиру. Закрывается не мгновенно — привод поворачивается несколько секунд.",
+  "signals": [
+    {
+      "name": "valve",
+      "title": "Кран",
+      "group": "capability",
+      "type": "bool",
+      "default": 1,
+      "options": {
+        "0": "закрыт",
+        "1": "открыт"
+      }
+    },
+    {
+      "name": "position",
+      "title": "Положение заслонки",
+      "group": "property",
+      "unit": "%",
+      "min": 0,
+      "max": 100,
+      "default": 100,
+      "precision": 0
+    },
+    {
+      "name": "flow",
+      "title": "Расход воды",
+      "group": "property",
+      "unit": "л/мин",
+      "min": 0,
+      "precision": 1
+    },
+    {
+      "name": "water_total",
+      "title": "Вода всего",
+      "group": "property",
+      "unit": "л",
+      "monotonic": true,
+      "precision": 2
+    },
+    {
+      "name": "travel_time",
+      "title": "Время поворота привода",
+      "group": "setting",
+      "unit": "с",
+      "min": 1,
+      "max": 30,
+      "default": 4,
+      "precision": 0
+    },
+    {
+      "name": "tap_open",
+      "title": "Открыт смеситель",
+      "group": "environment",
+      "type": "bool",
+      "default": 1,
+      "options": {
+        "0": "нет",
+        "1": "да"
+      }
+    }
+  ],
+  "behavior": [
+    {
+      "id": "drive",
+      "title": "Привод плавно идёт к цели",
+      "on": "tick",
+      "do": [
+        {
+          "set": "position",
+          "to": "position + sign(valve * 100 - position) * min(abs(valve * 100 - position), 100 / travel_time * dt)"
+        }
+      ]
+    },
+    {
+      "id": "flow",
+      "title": "Расход зависит от заслонки и смесителя",
+      "on": "tick",
+      "do": [
+        {
+          "set": "flow",
+          "to": "12 * position / 100 * tap_open"
+        }
+      ]
+    },
+    {
+      "id": "meter",
+      "on": "tick",
+      "do": [
+        {
+          "set": "water_total",
+          "to": "water_total + flow / 60 * dt"
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "valve_closed",
+      "title": "Кран перекрыт",
+      "when": "position <= 0",
+      "severity": "info",
+      "stimulus": [
+        {
+          "signal": "valve",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "name": "valve_opened",
+      "title": "Кран открыт",
+      "when": "position >= 100",
+      "severity": "info"
+    }
+  ]
+}

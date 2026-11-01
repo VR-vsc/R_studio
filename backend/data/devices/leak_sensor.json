@@ -1,0 +1,33 @@
+{
+  "rdl": "1.0",
+  "id": "leak_sensor",
+  "title": "Датчик протечки",
+  "category": "safety",
+  "icon": "droplet",
+  "description": "Ставится на пол под стиральной машиной или трубами. Срабатывает, если вода держится дольше задержки.",
+  "signals": [
+    {"name": "leak", "title": "Протечка", "group": "property", "type": "bool", "options": {"0": "сухо", "1": "протечка"}},
+    {"name": "battery", "title": "Заряд батареи", "group": "property", "unit": "%", "min": 0, "max": 100, "default": 100, "precision": 1},
+    {"name": "self_test", "title": "Самопроверка", "group": "capability", "type": "button"},
+    {"name": "debounce", "title": "Задержка срабатывания", "group": "setting", "unit": "с", "min": 0, "max": 60, "default": 2, "precision": 0},
+    {"name": "wet", "title": "Вода на полу", "group": "environment", "type": "bool", "options": {"0": "сухо", "1": "вода"}}
+  ],
+  "vars": {"wet_for": 0, "test_left": 0},
+  "behavior": [
+    {"id": "count_wet", "title": "Считаем, сколько секунд датчик в воде", "on": "tick",
+     "do": [{"set": "wet_for", "to": "wet_for + dt if wet else 0"}]},
+    {"id": "detect", "title": "Протечка — если вода держится дольше задержки или идёт самопроверка", "on": "tick",
+     "do": [{"set": "leak", "to": "wet_for >= debounce && wet || test_left > 0"}]},
+    {"id": "test_timer", "on": "tick", "when": "test_left > 0",
+     "do": [{"set": "test_left", "to": "max(0, test_left - dt)"}]},
+    {"id": "battery_drain", "title": "Батарея медленно садится", "on": "tick",
+     "do": [{"set": "battery", "to": "battery - 0.01 * dt"}]},
+    {"id": "self_test", "title": "Самопроверка: 3 секунды имитируем протечку", "on": "command:self_test",
+     "do": [{"set": "test_left", "to": 3}, {"log": "самопроверка запущена"}]}
+  ],
+  "events": [
+    {"name": "leak_detected", "title": "Обнаружена протечка", "when": "leak == 1", "severity": "critical"},
+    {"name": "leak_cleared", "title": "Протечка устранена", "when": "leak == 0", "severity": "info"},
+    {"name": "low_battery", "title": "Батарея датчика почти разряжена", "when": "battery < 15", "severity": "warning"}
+  ]
+}

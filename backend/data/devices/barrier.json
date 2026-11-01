@@ -1,0 +1,36 @@
+{
+  "rdl": "1.0",
+  "id": "barrier",
+  "title": "Шлагбаум",
+  "category": "access",
+  "icon": "barrier",
+  "description": "Въезд во двор: открывается по команде, сам закрывается через паузу и поднимается обратно, если под ним машина.",
+  "signals": [
+    {"name": "state", "title": "Состояние", "group": "property", "type": "enum", "options": {"0": "закрыт", "1": "открывается", "2": "открыт", "3": "закрывается"}},
+    {"name": "position", "title": "Подъём стрелы", "group": "property", "unit": "%", "min": 0, "max": 100, "precision": 0},
+    {"name": "open_cmd", "title": "Открыть", "group": "capability", "type": "button"},
+    {"name": "hold_time", "title": "Пауза перед закрытием", "group": "setting", "unit": "с", "min": 1, "max": 120, "default": 5, "precision": 0},
+    {"name": "obstacle", "title": "Машина под стрелой", "group": "environment", "type": "bool", "options": {"0": "пусто", "1": "машина"}}
+  ],
+  "vars": {"hold_left": 0},
+  "behavior": [
+    {"id": "open", "title": "Команда «открыть»", "on": "command:open_cmd", "when": "state == 0 || state == 3",
+     "do": [{"set": "state", "to": 1}, {"log": "открываю"}]},
+    {"id": "extend", "title": "Уже открыт — продлеваем паузу", "on": "command:open_cmd", "when": "state == 2",
+     "do": [{"set": "hold_left", "to": "hold_time"}]},
+    {"id": "lift", "on": "tick", "when": "state == 1", "do": [{"set": "position", "to": "position + 25 * dt"}]},
+    {"id": "opened", "on": "tick", "when": "state == 1 && position >= 100",
+     "do": [{"set": "state", "to": 2}, {"set": "hold_left", "to": "hold_time"}]},
+    {"id": "wait", "on": "tick", "when": "state == 2", "do": [{"set": "hold_left", "to": "hold_left - dt if !obstacle else hold_time"}]},
+    {"id": "start_close", "on": "tick", "when": "state == 2 && hold_left <= 0", "do": [{"set": "state", "to": 3}]},
+    {"id": "reverse", "title": "Под стрелой машина — поднимаем обратно", "on": "tick", "when": "state == 3 && obstacle",
+     "do": [{"set": "state", "to": 1}, {"log": "препятствие — реверс"}]},
+    {"id": "lower", "on": "tick", "when": "state == 3", "do": [{"set": "position", "to": "position - 25 * dt"}]},
+    {"id": "closed", "on": "tick", "when": "state == 3 && position <= 0", "do": [{"set": "state", "to": 0}]}
+  ],
+  "events": [
+    {"name": "opened", "title": "Шлагбаум открыт", "when": "state == 2", "severity": "info"},
+    {"name": "closed", "title": "Шлагбаум закрыт", "when": "state == 0", "severity": "info"},
+    {"name": "obstacle_reverse", "title": "Реверс: под стрелой препятствие", "when": "obstacle == 1 && state == 1 && position < 100", "severity": "warning"}
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "rsl": "1.0", "id": "fire_evacuation", "title": "Пожар: эвакуация",
+  "description": "Дым на кухне — тревога, свет для эвакуации, остановка притока воздуха и открытый въезд для пожарных.",
+  "enabled": true,
+  "triggers": [{"type": "event", "instance": "kitchen_smoke", "event": "fire_alarm"}],
+  "conditions": [], "match": "all",
+  "actions": [
+    {"type": "command", "instance": "hall_siren", "signal": "siren", "value": 1},
+    {"type": "command", "instance": "living_light", "signal": "lamp", "value": 1},
+    {"type": "command", "instance": "living_light", "signal": "brightness", "value": 100},
+    {"type": "command", "instance": "bedroom_vent", "signal": "mode", "value": 0},
+    {"type": "command", "instance": "yard_barrier", "signal": "open_cmd", "value": 1},
+    {"type": "notify", "text": "Пожарная тревога на кухне. Покиньте квартиру, въезд для пожарных открыт.", "severity": "critical", "to": "all"}
+  ],
+  "cooldown": 120
+}

@@ -1,0 +1,130 @@
+{
+  "rdl": "1.0",
+  "id": "smoke_detector",
+  "title": "Пожарный датчик",
+  "category": "safety",
+  "icon": "flame",
+  "description": "Оптический датчик дыма. Тревога — когда задымлённость выше порога.",
+  "signals": [
+    {
+      "name": "smoke",
+      "title": "Задымлённость",
+      "group": "property",
+      "unit": "%",
+      "min": 0,
+      "max": 100,
+      "precision": 0
+    },
+    {
+      "name": "alarm",
+      "title": "Пожарная тревога",
+      "group": "property",
+      "type": "bool",
+      "options": {
+        "0": "норма",
+        "1": "пожар"
+      }
+    },
+    {
+      "name": "self_test",
+      "title": "Самопроверка",
+      "group": "capability",
+      "type": "button"
+    },
+    {
+      "name": "threshold",
+      "title": "Порог тревоги",
+      "group": "setting",
+      "unit": "%",
+      "min": 5,
+      "max": 100,
+      "default": 60,
+      "precision": 0
+    },
+    {
+      "name": "smoke_density",
+      "title": "Дым в помещении",
+      "group": "environment",
+      "unit": "%",
+      "min": 0,
+      "max": 100,
+      "precision": 0
+    }
+  ],
+  "vars": {
+    "test_left": 0
+  },
+  "behavior": [
+    {
+      "id": "sense",
+      "title": "Камера датчика заполняется дымом с задержкой",
+      "on": "tick",
+      "do": [
+        {
+          "set": "smoke",
+          "to": "smoke + (smoke_density - smoke) * min(1, 0.5 * dt)"
+        }
+      ]
+    },
+    {
+      "id": "alarm",
+      "on": "tick",
+      "do": [
+        {
+          "set": "alarm",
+          "to": "smoke >= threshold || test_left > 0"
+        }
+      ]
+    },
+    {
+      "id": "test_timer",
+      "on": "tick",
+      "when": "test_left > 0",
+      "do": [
+        {
+          "set": "test_left",
+          "to": "max(0, test_left - dt)"
+        }
+      ]
+    },
+    {
+      "id": "self_test",
+      "on": "command:self_test",
+      "do": [
+        {
+          "set": "test_left",
+          "to": 3
+        },
+        {
+          "log": "самопроверка: сирена 3 с"
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "fire_alarm",
+      "title": "Пожарная тревога",
+      "when": "alarm == 1",
+      "severity": "critical",
+      "stimulus": [
+        {
+          "signal": "smoke_density",
+          "value": 90
+        }
+      ]
+    },
+    {
+      "name": "smoke_rising",
+      "title": "Появился дым",
+      "when": "smoke >= threshold / 2",
+      "severity": "warning",
+      "stimulus": [
+        {
+          "signal": "smoke_density",
+          "value": 45
+        }
+      ]
+    }
+  ]
+}

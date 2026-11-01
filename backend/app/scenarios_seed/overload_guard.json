@@ -1,0 +1,12 @@
+{
+  "rsl": "1.0", "id": "overload_guard", "title": "Перегрузка сети",
+  "description": "Включили слишком много приборов — на 30 секунд снимаем нагрузку, чтобы не выбило автомат в щите.",
+  "enabled": true,
+  "triggers": [{"type": "event", "instance": "shield_meter", "event": "overload"}],
+  "conditions": [], "match": "all",
+  "actions": [
+    {"type": "command", "instance": "shield_meter", "signal": "load_relay", "value": 0, "hold": 30},
+    {"type": "notify", "text": "Превышен лимит мощности. Нагрузка отключена на 30 секунд — выключите лишние приборы.", "severity": "warning", "to": "all"}
+  ],
+  "cooldown": 60
+}

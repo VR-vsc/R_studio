@@ -1,0 +1,12 @@
+{
+  "mode": "live",
+  "base_url": "https://api-uae-test.ujin.tech",
+  "ust": "ust-2815061-698e8e597ae73924fe701171d1fbfd73",
+  "apartment_id": "2767",
+  "cls": "integrations_devices",
+  "interval": 2,
+  "poll_tasks": true,
+  "poll_interval": 5,
+  "employee_ust": "",
+  "naming": "both"
+}

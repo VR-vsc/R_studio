@@ -1,0 +1,40 @@
+{
+  "rsl": "1.0",
+  "id": "fresh_air",
+  "title": "Душно в спальне",
+  "description": "CO₂ выше 1200 ppm, а вентиляция в ручном режиме — переводим в авто и предупреждаем.",
+  "enabled": true,
+  "triggers": [
+    {
+      "type": "value",
+      "instance": "bedroom_vent",
+      "signal": "co2",
+      "op": ">",
+      "value": 1200
+    }
+  ],
+  "conditions": [
+    {
+      "instance": "bedroom_vent",
+      "signal": "mode",
+      "op": "!=",
+      "value": 2
+    }
+  ],
+  "match": "all",
+  "actions": [
+    {
+      "type": "command",
+      "instance": "bedroom_vent",
+      "signal": "mode",
+      "value": 2
+    },
+    {
+      "type": "notify",
+      "text": "В спальне душно — включили вентиляцию в авто-режим.",
+      "severity": "warning",
+      "to": "resident"
+    }
+  ],
+  "cooldown": 300
+}

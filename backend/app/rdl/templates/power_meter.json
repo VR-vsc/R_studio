@@ -1,0 +1,125 @@
+{
+  "rdl": "1.0",
+  "id": "power_meter",
+  "title": "Счётчик электроэнергии",
+  "category": "energy",
+  "icon": "meter",
+  "description": "Считает энергию квартиры и умеет отключать нагрузку реле. Показания только растут — как у настоящего счётчика.",
+  "signals": [
+    {
+      "name": "power_w",
+      "title": "Мощность сейчас",
+      "group": "property",
+      "unit": "Вт",
+      "min": 0,
+      "precision": 0
+    },
+    {
+      "name": "total_kwh",
+      "title": "Энергия всего",
+      "group": "property",
+      "unit": "кВт·ч",
+      "monotonic": true,
+      "default": 1520.4,
+      "precision": 4
+    },
+    {
+      "name": "voltage",
+      "title": "Напряжение",
+      "group": "property",
+      "unit": "В",
+      "default": 230,
+      "precision": 1
+    },
+    {
+      "name": "load_relay",
+      "title": "Реле нагрузки",
+      "group": "capability",
+      "type": "bool",
+      "default": 1,
+      "options": {
+        "0": "отключено",
+        "1": "включено"
+      }
+    },
+    {
+      "name": "power_limit",
+      "title": "Лимит мощности",
+      "group": "setting",
+      "unit": "Вт",
+      "min": 500,
+      "max": 15000,
+      "default": 5000,
+      "precision": 0
+    },
+    {
+      "name": "load_w",
+      "title": "Включённые приборы",
+      "group": "environment",
+      "unit": "Вт",
+      "min": 0,
+      "max": 15000,
+      "default": 800,
+      "precision": 0
+    }
+  ],
+  "behavior": [
+    {
+      "id": "power",
+      "on": "tick",
+      "do": [
+        {
+          "set": "power_w",
+          "to": "load_w * load_relay"
+        }
+      ]
+    },
+    {
+      "id": "meter",
+      "title": "Наматываем энергию",
+      "on": "tick",
+      "do": [
+        {
+          "set": "total_kwh",
+          "to": "total_kwh + power_w * dt / 3600000"
+        }
+      ]
+    },
+    {
+      "id": "voltage",
+      "on": "tick",
+      "do": [
+        {
+          "set": "voltage",
+          "to": "230 + (rand() - 0.5) * 4 - power_w / 2000"
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "overload",
+      "title": "Превышен лимит мощности",
+      "when": "power_w > power_limit",
+      "severity": "warning",
+      "stimulus": [
+        {
+          "signal": "load_w",
+          "value": 7000
+        }
+      ]
+    },
+    {
+      "name": "relay_off",
+      "title": "Нагрузка отключена",
+      "when": "load_relay == 0",
+      "severity": "info",
+      "stimulus": [
+        {
+          "signal": "load_relay",
+          "value": 0
+        }
+      ]
+    }
+  ]
+}
